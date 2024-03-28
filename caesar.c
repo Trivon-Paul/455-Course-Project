@@ -40,7 +40,6 @@ int main(int argc, char *argv[]){
     
     // name of file or directory provided by the user
     char *dirName = argv[1];
-
     if(flagB == 1) dirName = argv[2];
     
     // if dirName is not a file go through the directory
@@ -75,32 +74,32 @@ int main(int argc, char *argv[]){
         for(int i = 0; i < length; i++){
             if(strcmp(argv[0], dirArray[i]) != 0){
                 // build a full path name
-                char temp[100];
+                char path[100];
 
                 char *forwardSlash = "/";
-                size_t n = strlen(temp);
-                size_t remaining = sizeof(temp) - n - 1;
-                strncat(temp, dirName, remaining);
+                size_t n = strlen(path);
+                size_t remaining = sizeof(path) - n - 1;
+                strncat(path, dirName, remaining);
                 
-                n = strlen(temp);
-                remaining = sizeof(temp) - n - 1;
-                strncat(temp, forwardSlash, remaining);
+                n = strlen(path);
+                remaining = sizeof(path) - n - 1;
+                strncat(path, forwardSlash, remaining);
                 
-                n = strlen(temp);
-                remaining = sizeof(temp) - n - 1;
-                strncat(temp, dirArray[i], remaining);
+                n = strlen(path);
+                remaining = sizeof(path) - n - 1;
+                strncat(path, dirArray[i], remaining);
                 
 
                 // if the given path name is a file then encrypt the file
-                if(isFile(temp) == 1){ 
-                    printf("File: %s\n\n", temp);
-                    if(flagB == 1) state = backupFile(dirArray[i], dirName, temp);
-                    state = fileWrite(temp);
+                if(isFile(path) == 1){ 
+                    printf("File: %s\n\n", path);
+                    if(flagB == 1) state = backupFile(dirArray[i], dirName, path);
+                    state = fileWrite(path);
                 }
 
                 free(dirArray[i]);
                 printf("*******************************************\n");
-                for(int e = 0; e < 100; e++) temp[e] = '\0';
+                for(int e = 0; e < 100; e++) path[e] = '\0';
             }
         }
         
@@ -111,6 +110,7 @@ int main(int argc, char *argv[]){
         return fileWrite(dirName);
     }
 }
+
 // Author: Minh Tram
 void caesarCipher(char *text, int shift)
 {
