@@ -8,18 +8,19 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#define MAXWORD 20
 
+#define MAXPATH 50
 #define Userinput_INT_MIN -25
 #define Userinput_INT_MAX 25
 
 int length = 100;
 
 void caesarCipher(char *text, int shift);
-int dirLengthI(char *dirName);
-int do_ls(char *dirName, char **dirArray);
+int directoryLength(char *dirName);
+int getFilenames(char *dirName, char **dirArray);
 int fileWrite(char *filename);
 int isFile(char *filename);
+int backupFile(char *filename, char *dir, char *path);
 
 // Author: Trivon Paul
 int main(int argc, char *argv[]){
@@ -27,33 +28,25 @@ int main(int argc, char *argv[]){
     int state = 0; 
 
     // flags set by the user and if a flag was set
-    int flagA = 0, flagS = 0, flagR = 0;
-    int flagSet = 0; 
+    int flagB = 0;
     char option;
-    while((option = getopt(argc, argv, "asr")) != -1){
+    while((option = getopt(argc, argv, "b")) != -1){
         switch(option){
-            case 'a':
-                flagSet = 1; 
-                flagA = 1;
-                break;
-            case 's':
-                flagSet = 1; 
-                flagS = 1;
-                break;
-            case 'r':
-                flagSet = 1; 
-                flagR = 1;
+            case 'b':
+                flagB = 1;
                 break;
         }
     }
     
     // name of file or directory provided by the user
     char *dirName = argv[1];
+
+    if(flagB == 1) dirName = argv[2];
     
     // if dirName is not a file go through the directory
     if(isFile(dirName) == 0){
         // get the number of files in the directory
-        state = dirLengthI(dirName);
+        state = directoryLength(dirName);
 
         // holds the names of all files and directories
         char **dirArray;
@@ -66,15 +59,15 @@ int main(int argc, char *argv[]){
 
         // Allocate space for each string
         for (int i = 0; i < length; i++) {
-            dirArray[i] = (char *)malloc(MAXWORD * sizeof(char));
+            dirArray[i] = (char *)malloc(MAXPATH * sizeof(char));
             if (dirArray[i] == NULL) {
                 printf("Memory allocation failed for string %d.\n", i);
                 return 1;
             }
         }
         
-        // If no flag is set then get every file name to then encrypt
-        if(flagSet == 0) state = do_ls(dirName, dirArray);
+        // get every file name to then encrypt
+        state = getFilenames(dirName, dirArray);
 
         char *forwardSlash = "/";
         
@@ -97,10 +90,13 @@ int main(int argc, char *argv[]){
                 remaining = sizeof(temp) - n - 1;
                 strncat(temp, dirArray[i], remaining);
                 
-                printf("File: %s\n\n", temp);
 
                 // if the given path name is a file then encrypt the file
-                if(isFile(temp) == 1) state = fileWrite(temp);
+                if(isFile(temp) == 1){ 
+                    printf("File: %s\n\n", temp);
+                    if(flagB == 1) state = backupFile(dirArray[i], dirName, temp);
+                    state = fileWrite(temp);
+                }
 
                 free(dirArray[i]);
                 printf("*******************************************\n");
@@ -111,6 +107,7 @@ int main(int argc, char *argv[]){
         free(dirArray);
         return state;
     } else {
+        if(flagB == 1) state = backupFile(NULL, NULL, dirName);
         return fileWrite(dirName);
     }
 }
@@ -184,7 +181,6 @@ int fileWrite(char *filename){
     printf("Original File content:\n%s\n", buffer);
     // Close the file after reading
     fclose(file);
-    // Author: Minh Tram
     // Get the shifting number from the user
     printf("Enter the shifting number: ");
     // Catching Exceptions, ID: 5-5 The code uses scanf to get user input for the shifting number. If the input is not valid (e.g., not an integer), an error message is printed, and the program returns with an error code.
@@ -224,7 +220,6 @@ int fileWrite(char *filename){
     return 0; // Exit successfully
 }
 
-// Author: Trivon Paul
 int isFile(char *filename){
     struct stat fileInfo;
     if (lstat(filename, &fileInfo) == -1) {
@@ -239,7 +234,7 @@ int isFile(char *filename){
 }
 
 // Author: Trivon Paul
-int dirLengthI(char *dirName){
+int directoryLength(char *dirName){
     length = 0;
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
@@ -257,7 +252,7 @@ int dirLengthI(char *dirName){
 }
 
 // Author: Trivon Paul
-int do_ls(char *dirName, char **dirArray){
+int getFilenames(char *dirName, char **dirArray){
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
     if((dir_ptr = opendir(dirName)) == 0){
@@ -274,4 +269,55 @@ int do_ls(char *dirName, char **dirArray){
     }
     closedir(dir_ptr);
     return 0; 
+}
+
+// Author: Trivon Paul
+int backupFile(char *filename, char *dir, char *path) {
+    char backupDir[MAXPATH];
+    char backupFile[MAXPATH];
+
+    // Create backup directory if it doesn't exist
+    if(dir == NULL){
+        strcpy(backupDir, "backup");
+        mkdir(backupDir, 0777);
+    } else {
+        strcpy(backupDir, dir);
+        strcat(backupDir, "/backup");
+        mkdir(backupDir, 0777);
+    }
+
+    // Form the backup file path
+    if(dir == NULL)
+    snprintf(backupFile, sizeof(backupFile), "%s/%s", backupDir, path);
+    else
+    snprintf(backupFile, sizeof(backupFile), "%s/%s", backupDir, filename);
+
+    // Open original file for reading
+    FILE *originalFile = fopen(path, "rb");
+    if (originalFile == NULL) {
+        perror("Error opening original file");
+        return 1;
+    }
+
+    // Open backup file for writing
+    FILE *backup_file_ptr = fopen(backupFile, "wb");
+    if (backup_file_ptr == NULL) {
+        perror("Error creating backup file");
+        fclose(originalFile);
+        return 1;
+    }
+
+    // Copy contents from original file to backup file
+    int ch;
+    while ((ch = fgetc(originalFile)) != EOF) {
+        fputc(ch, backup_file_ptr);
+    }
+
+    // Close files
+    fclose(originalFile);
+    fclose(backup_file_ptr);
+
+    printf("Backup created: %s\n", backupFile);
+
+    return 0;
 }
