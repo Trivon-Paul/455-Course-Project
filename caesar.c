@@ -24,21 +24,41 @@ int backupFile(char *filename, char *dir, char *path);
 
 // Author: Trivon Paul
 int main(int argc, char *argv[]){
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <filename or directory name>\n", argv[0]);
+     if (argc < 2) {
+        fprintf(stderr, "Usage: %s [-b] <file_or_directory>, -h for more information\n", argv[0]);
         return 1; // Exit with an error code
     }
     // flags set by the user and if a flag was set
-    int flagB = 0;
+    int flagB = 0, flagH = 0;
     char option;
-    while((option = getopt(argc, argv, "b")) != -1){
+    while((option = getopt(argc, argv, "bh")) != -1){
         switch(option){
             case 'b':
                 flagB = 1;
                 break;
+            case 'h':
+                flagH = 1;
+                break;
         }
     }
     
+    if(flagH == 1){
+        printf("Usage: %s [-b] <file_or_directory>\n\n"
+                "Program name: Caesar\n"
+                "Arguments:\n"
+                "    -b     Backs up the given file or directory before encryption\n\n"
+                "Description:\n"
+                "    This program takes the given file name or directory and encrypts it using a Caesar cipher.\n"
+                "    If given a directory, it will recursively go through the directory and encrypt all the files\n"
+                "    found within it. The user will be prompted to enter the number of shifts for encryption.\n"
+                "Example:\n"
+                "    Encrypt a single file:\n"
+                "        %s example.txt\n\n"
+                "    Encrypt a directory (backing up files before encryption):\n"
+                "        %s -b /path/to/directory\n", argv[0],argv[0],argv[0]);
+        return 0;
+    }
+
     // name of file or directory provided by the user
     char *dirName = argv[1];
     if(flagB == 1) dirName = argv[2];
