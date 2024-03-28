@@ -24,12 +24,15 @@ int backupFile(char *filename, char *dir, char *path);
 
 // Author: Trivon Paul
 int main(int argc, char *argv[]){
+     // if the user doesn't provide any arguments exit program
      if (argc < 2) {
         fprintf(stderr, "Usage: %s [-b] <file_or_directory>, -h for more information\n", argv[0]);
         return 1; // Exit with an error code
     }
     // flags set by the user and if a flag was set
     int flagB = 0, flagH = 0;
+
+     // holds the options/arguments provided by the user
     char option;
     while((option = getopt(argc, argv, "bh")) != -1){
         switch(option){
@@ -41,7 +44,8 @@ int main(int argc, char *argv[]){
                 break;
         }
     }
-    
+
+     // if the user sets the H flag then print a help message then exit
     if(flagH == 1){
         printf("Usage: %s [-b] <file_or_directory>\n\n"
                 "Program name: Caesar\n"
@@ -72,6 +76,7 @@ int main(int argc, char *argv[]){
         char **dirArray;
         dirArray = (char **)malloc(length * sizeof(char *));
 
+         // if memory wasn't allocated exit program with error code
         if (dirArray == NULL) {
             printf("Memory allocation failed for the array of strings.\n");
             return 1;
@@ -80,6 +85,8 @@ int main(int argc, char *argv[]){
         // Allocate space for each string
         for (int i = 0; i < length; i++) {
             dirArray[i] = (char *)malloc(MAXPATH * sizeof(char));
+             
+             // if memory wasn't allocated exit program with error code
             if (dirArray[i] == NULL) {
                 printf("Memory allocation failed for string %d.\n", i);
                 return 1;
@@ -91,13 +98,11 @@ int main(int argc, char *argv[]){
 
         char *forwardSlash = "/";
         
-        
         for(int i = 0; i < length; i++){
             if(strcmp(argv[0], dirArray[i]) != 0){
                 // build a full path name
                 char path[100];
 
-                char *forwardSlash = "/";
                 size_t n = strlen(path);
                 size_t remaining = sizeof(path) - n - 1;
                 strncat(path, dirName, remaining);
@@ -114,20 +119,31 @@ int main(int argc, char *argv[]){
                 // if the given path name is a file then encrypt the file
                 if(isFile(path) == 1){ 
                     printf("File: %s\n\n", path);
+
+                     //if the user set a B flag then backup the file
                     if(flagB == 1) if(backupFile(dirArray[i], dirName, path) == -1) return 1; // Exit with an error code
+
+                     // encrypt the file using caesar cypher
                     if(fileWrite(path) == 1) return 1; // Exit with an error code
                     printf("*******************************************\n");
                 }
 
+                 // Free the dynamically allocated memory
                 free(dirArray[i]);
+
+                 // Clear path variable
                 for(int e = 0; e < 100; e++) path[e] = '\0';
             }
         }
-        
+
+         // Free the dynamically allocated memory
         free(dirArray);
     } else {
+         //if the user set a B flag then backup the file
         if(flagB == 1) if(backupFile(NULL, NULL, dirName) == -1) return 1; // Exit with an error code
-        return fileWrite(dirName);
+
+         // encrypt the file using caesar cypher
+        if(fileWrite(dirName) == 1) return 1; // Exit with an error code
     }
 
     return 0;
@@ -242,6 +258,7 @@ int fileWrite(char *filename){
     return 0; // Exit successfully
 }
 
+// Author: Trivon Paul
 int isFile(char *filename){
     struct stat fileInfo;
     if (lstat(filename, &fileInfo) == -1) {
@@ -257,6 +274,7 @@ int isFile(char *filename){
 
 // Author: Trivon Paul
 int directoryLength(char *dirName){
+     // Set the length to 0
     length = 0;
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
@@ -264,11 +282,15 @@ int directoryLength(char *dirName){
         printf("Directory not found\n");
         return -1; 
     }
+
+    // For every file or directory encountered add 1 to the length
     while((dirent_ptr = readdir(dir_ptr)) != 0){
         char *temp = dirent_ptr->d_name;
         if(temp[0] != '.')
             length++;
     }
+
+    // Close the directory
     closedir(dir_ptr);
     return 0; 
 }
@@ -289,6 +311,8 @@ int getFilenames(char *dirName, char **dirArray){
             i++;
         }
     }
+
+    // Close the directory
     closedir(dir_ptr);
     return 0; 
 }
