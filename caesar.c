@@ -92,10 +92,10 @@ int main(int argc, char *argv[]){
                     printf("File: %s\n\n", path);
                     if(flagB == 1) if(backupFile(dirArray[i], dirName, path) == -1) return 1; // Exit with an error code
                     if(fileWrite(path) == 1) return 1; // Exit with an error code
+                    printf("*******************************************\n");
                 }
 
                 free(dirArray[i]);
-                printf("*******************************************\n");
                 for(int e = 0; e < 100; e++) path[e] = '\0';
             }
         }
@@ -314,7 +314,7 @@ int backupFile(char *filename, char *dir, char *path) {
     fclose(originalFile);
     fclose(backup_file_ptr);
 
-    printf("Backup created: %s\n", backupFile);
+    printf("Backup created: %s\n\n", backupFile);
 
     return 0;
 }
