@@ -100,8 +100,9 @@ int main(int argc, char *argv[]){
                 printf("File: %s\n\n", temp);
 
                 // if the given path name is a file then encrypt the file
-                if(isFile(dirArray[i]) == 1) state = fileWrite(temp);
+                if(isFile(temp) == 1) state = fileWrite(temp);
 
+                free(dirArray[i]);
                 printf("*******************************************\n");
                 for(int e = 0; e < 100; e++) temp[e] = '\0';
             }
