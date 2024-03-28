@@ -15,7 +15,7 @@ gcc Caesar.c
 
 Here's a brief description of its functionality:
 
-This C program performs a Caesar cipher encryption on the contents of a specified file. Here's a brief description of its functionality:
+This C program performs a Caesar cipher encryption on the contents of a specified file or directory. Here's a brief description of its functionality:
 
 1. Command-Line Argument Handling:
   * The program expects exactly two command-line arguments: the program name itself (argv[0]) and the name of the file to be processed (argv[1]).
