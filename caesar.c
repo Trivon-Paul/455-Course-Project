@@ -24,6 +24,10 @@ int backupFile(char *filename, char *dir, char *path);
 
 // Author: Trivon Paul
 int main(int argc, char *argv[]){
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <filename or directory name>\n", argv[0]);
+        return 1; // Exit with an error code
+    }
     // flags set by the user and if a flag was set
     int flagB = 0;
     char option;
