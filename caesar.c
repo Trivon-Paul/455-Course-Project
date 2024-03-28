@@ -99,41 +99,42 @@ int main(int argc, char *argv[]){
         char *forwardSlash = "/";
         
         for(int i = 0; i < length; i++){
-            if(strcmp(argv[0], dirArray[i]) != 0){
-                // build a full path name
-                char path[100];
+            // If the filename is the same as the filename of the program go to next file
+            if(strcmp(argv[0], dirArray[i]) == 0) continue;
 
-                size_t n = strlen(path);
-                size_t remaining = sizeof(path) - n - 1;
-                strncat(path, dirName, remaining);
-                
-                n = strlen(path);
-                remaining = sizeof(path) - n - 1;
-                strncat(path, forwardSlash, remaining);
-                
-                n = strlen(path);
-                remaining = sizeof(path) - n - 1;
-                strncat(path, dirArray[i], remaining);
-                
+           // build a full path name
+           char path[100];
 
-                // if the given path name is a file then encrypt the file
-                if(isFile(path) == 1){ 
-                    printf("File: %s\n\n", path);
+           size_t n = strlen(path);
+           size_t remaining = sizeof(path) - n - 1;
+           strncat(path, dirName, remaining);
+           
+           n = strlen(path);
+           remaining = sizeof(path) - n - 1;
+           strncat(path, forwardSlash, remaining);
+           
+           n = strlen(path);
+           remaining = sizeof(path) - n - 1;
+           strncat(path, dirArray[i], remaining);
+           
 
-                     //if the user set a B flag then backup the file
-                    if(flagB == 1) if(backupFile(dirArray[i], dirName, path) == -1) return 1; // Exit with an error code
+           // if the given path name is a file then encrypt the file
+           if(isFile(path) == 1){ 
+               printf("File: %s\n\n", path);
 
-                     // encrypt the file using caesar cypher
-                    if(fileWrite(path) == 1) return 1; // Exit with an error code
-                    printf("*******************************************\n");
-                }
+                //if the user set a B flag then backup the file
+               if(flagB == 1) if(backupFile(dirArray[i], dirName, path) == -1) return 1; // Exit with an error code
 
-                 // Free the dynamically allocated memory
-                free(dirArray[i]);
+                // encrypt the file using caesar cypher
+               if(fileWrite(path) == 1) return 1; // Exit with an error code
+               printf("*******************************************\n");
+           }
 
-                 // Clear path variable
-                for(int e = 0; e < 100; e++) path[e] = '\0';
-            }
+            // Free the dynamically allocated memory
+           free(dirArray[i]);
+
+            // Clear path variable
+           for(int e = 0; e < 100; e++) path[e] = '\0';
         }
 
          // Free the dynamically allocated memory
