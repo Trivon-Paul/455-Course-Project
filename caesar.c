@@ -24,9 +24,6 @@ int backupFile(char *filename, char *dir, char *path);
 
 // Author: Trivon Paul
 int main(int argc, char *argv[]){
-    // the state of the overall program if 1 an error has occured
-    int state = 0; 
-
     // flags set by the user and if a flag was set
     int flagB = 0;
     char option;
@@ -45,7 +42,7 @@ int main(int argc, char *argv[]){
     // if dirName is not a file go through the directory
     if(isFile(dirName) == 0){
         // get the number of files in the directory
-        state = directoryLength(dirName);
+        if(directoryLength(dirName) == -1) return 1; // Exit with an error code
 
         // holds the names of all files and directories
         char **dirArray;
@@ -66,7 +63,7 @@ int main(int argc, char *argv[]){
         }
         
         // get every file name to then encrypt
-        state = getFilenames(dirName, dirArray);
+        if(getFilenames(dirName, dirArray) == -1) return 1; // Exit with an error code
 
         char *forwardSlash = "/";
         
@@ -93,8 +90,8 @@ int main(int argc, char *argv[]){
                 // if the given path name is a file then encrypt the file
                 if(isFile(path) == 1){ 
                     printf("File: %s\n\n", path);
-                    if(flagB == 1) state = backupFile(dirArray[i], dirName, path);
-                    state = fileWrite(path);
+                    if(flagB == 1) if(backupFile(dirArray[i], dirName, path) == -1) return 1; // Exit with an error code
+                    if(fileWrite(path) == 1) return 1; // Exit with an error code
                 }
 
                 free(dirArray[i]);
@@ -104,11 +101,12 @@ int main(int argc, char *argv[]){
         }
         
         free(dirArray);
-        return state;
     } else {
-        if(flagB == 1) state = backupFile(NULL, NULL, dirName);
+        if(flagB == 1) if(backupFile(NULL, NULL, dirName) == -1) return 1; // Exit with an error code
         return fileWrite(dirName);
     }
+
+    return 0;
 }
 
 // Author: Minh Tram
