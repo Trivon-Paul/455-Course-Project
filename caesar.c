@@ -239,13 +239,13 @@ int directoryLength(char *dirName){
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
     if((dir_ptr = opendir(dirName)) == 0){
-    printf("Directory not found\n");
-    return -1; 
+        printf("Directory not found\n");
+        return -1; 
     }
     while((dirent_ptr = readdir(dir_ptr)) != 0){
-    char *temp = dirent_ptr->d_name;
-    if(temp[0] != '.')
-        length++;
+        char *temp = dirent_ptr->d_name;
+        if(temp[0] != '.')
+            length++;
     }
     closedir(dir_ptr);
     return 0; 
@@ -256,16 +256,16 @@ int getFilenames(char *dirName, char **dirArray){
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
     if((dir_ptr = opendir(dirName)) == 0){
-    printf("Directory not found\n");
-    return -1; 
+        printf("Directory not found\n");
+        return -1; 
     } 
     int i = 0; 
     while((dirent_ptr = readdir(dir_ptr)) != 0){
-    char *temp = dirent_ptr->d_name;
-    if(temp[0] != '.'){
-        strcpy(dirArray[i],temp);
-        i++;
-    }
+        char *temp = dirent_ptr->d_name;
+        if(temp[0] != '.'){
+            strcpy(dirArray[i],temp);
+            i++;
+        }
     }
     closedir(dir_ptr);
     return 0; 
@@ -279,12 +279,11 @@ int backupFile(char *filename, char *dir, char *path) {
     // Create backup directory if it doesn't exist
     if(dir == NULL){
         strcpy(backupDir, "backup");
-        mkdir(backupDir, 0777);
     } else {
         strcpy(backupDir, dir);
         strcat(backupDir, "/backup");
-        mkdir(backupDir, 0777);
     }
+    mkdir(backupDir, 0777);
 
     // Form the backup file path
     if(dir == NULL)
