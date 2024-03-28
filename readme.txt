@@ -1,7 +1,7 @@
 #README
 
 Objective:
-This C program performs a Caesar cipher encryption on the contents of a specified file.
+This C program performs a Caesar cipher encryption on the contents of a specified file or directory.
 The 'caesarCipher' function performs the actual encryption using the Caesar cipher algorithm, 
 shifting characters in the input text by the specified amount.
 
