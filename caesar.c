@@ -70,9 +70,14 @@ int main(int argc, char *argv[]){
     // if dirName is not a file go through the directory
     if(isFile(dirName) == 0){
         // get the number of files in the directory
+        /* Failure to Handle Errors Correctly, ID: 4-4 This approach ensures that errors are appropriately handled,
+           preventing unexpected behavior*/
         if(directoryLength(dirName) == -1) return 1; // Exit with an error code
 
         // holds the names of all files and directories
+        /* Buffer Overflows, ID: 1-2 By dynamically allocating memory based on the required length 
+           (length * sizeof(char *)), allows for flexibility in memory usage and prevents the array from 
+           overflowing its allocated space, thus reducing the risk of buffer overflow vulnerabilities */
         char **dirArray;
         dirArray = (char **)malloc(length * sizeof(char *));
 
@@ -83,6 +88,9 @@ int main(int argc, char *argv[]){
         }
 
         // Allocate space for each string
+        /* Buffer Overflows, ID: 1-3 This loop dynamically allocates memory for each string in dirArray 
+           to avoid buffer overflows. It iterates through each element of dirArray and allocates memory 
+           using malloc(). */
         for (int i = 0; i < length; i++) {
             dirArray[i] = (char *)malloc(MAXPATH * sizeof(char));
              
@@ -197,8 +205,10 @@ int fileWrite(char *filename){
     }
     // Dynamically allocate memory for the file content
     buffer = (char *)malloc(file_size + 1); // +1 for null terminator
-    // Failure to Handle Errors Correctly, ID: 4-3 Similarly, this part checks if memory allocation was successful and prints an error message if it fails.
-    // Catching Exceptions, ID: 5-3 Memory allocation using malloc is checked, and if it fails, an error message is printed, and the program returns with an error code.
+    /* Failure to Handle Errors Correctly, ID: 4-3 Similarly, this part checks if memory 
+       allocation was successful and prints an error message if it fails. */
+    /* Catching Exceptions, ID: 5-3 Memory allocation using malloc is checked, and if it 
+       fails, an error message is printed, and the program returns with an error code. */
     if (buffer == NULL)
     {
         perror("Memory allocation failed");
@@ -206,7 +216,9 @@ int fileWrite(char *filename){
         return 1; // Exit with an error code
     }
     // Read the file content into the dynamically allocated memory
-    // Catching Exceptions, ID: 5-4 The code uses fread to read the file content into the dynamically allocated buffer. If operation fails, an error message is printed, and the program returns with an error code.
+    /* Catching Exceptions, ID: 5-4 The code uses fread to read the file content into the dynamically 
+       allocated buffer. If operation fails, an error message is printed, and the program returns with 
+       an error code. */
     if (fread(buffer, 1, file_size, file) != file_size)
     {
         perror("Error reading file");
@@ -222,7 +234,8 @@ int fileWrite(char *filename){
     fclose(file);
     // Get the shifting number from the user
     printf("Enter the shifting number: ");
-    // Catching Exceptions, ID: 5-5 The code uses scanf to get user input for the shifting number. If the input is not valid (e.g., not an integer), an error message is printed, and the program returns with an error code.
+    /* Catching Exceptions, ID: 5-5 The code uses scanf to get user input for the shifting number. If the input 
+       is not valid (e.g., not an integer), an error message is printed, and the program returns with an error code. */
     if (scanf("%d", &shift) != 1 || (shift < Userinput_INT_MIN || shift > Userinput_INT_MAX))
     {
         fprintf(stderr, "Invalid input for shifting number\n");
@@ -235,7 +248,8 @@ int fileWrite(char *filename){
     printf("Modified File content:\n%s\n", buffer);
     // Open the file in binary mode for writing
     // Command Injection, ID: 3-2 Avoid Constructing Commands with User Input
-    // Failure to Handle Errors Correctly, ID: 4-2 This part correctly checks if the file can be opened and uses perror to print an error message with additional information from the operating system.
+    /* Failure to Handle Errors Correctly, ID: 4-2 This part correctly checks if the file can be opened and uses perror 
+       to print an error message with additional information from the operating system. */
     // Catching Exceptions, ID: 5-2 The code checks if the file can be opened successfully using 'fopen'.
     if ((file = fopen(filename, "wb")) == NULL)
     {
@@ -244,7 +258,8 @@ int fileWrite(char *filename){
         return 1; // Exit with an error code
     }
     // Write the modified content back to the file
-    // Catching Exceptions, ID: 5-6 The code uses fwrite to write the modified content back to the file. If operation fails, an error message is printed, and the program returns with an error code.
+    /* Catching Exceptions, ID: 5-6 The code uses fwrite to write the modified content back to the file. If operation 
+       fails, an error message is printed, and the program returns with an error code. */
     if (fwrite(buffer, 1, file_size, file) != file_size)
     {
         perror("Error writing to file");
@@ -330,6 +345,9 @@ int backupFile(char *filename, char *dir, char *path) {
         strcpy(backupDir, dir);
         strcat(backupDir, "/backup");
     }
+    /* Command Injection, ID: 3-3 By directly providing the directory name 
+       as a parameter to mkdir, rather than using external user input, the code mitigates
+       the risk of command injection*/
     mkdir(backupDir, 0777);
 
     // Form the backup file path
