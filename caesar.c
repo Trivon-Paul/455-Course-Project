@@ -277,12 +277,19 @@ int fileWrite(char *filename){
 // Author: Trivon Paul
 int isFile(char *filename){
     struct stat fileInfo;
+    // end with error if lstat can't access the filename given
+    /* Catching Exceptions, ID: 5-7 If lstat encounters an error (indicated by a return value of -1), 
+       we then utilize perror to print an error message. Subsequently, the function returns -1, 
+       indicating a failure to retrieve the file status.*/
     if (lstat(filename, &fileInfo) == -1) {
         perror("Failed to get file status");
         return -1;
     }
 
+    // return 1 if filename is a file
     if (S_ISREG(fileInfo.st_mode)) return 1;
+
+    // return 0 if filename is a directory
     if (S_ISDIR(fileInfo.st_mode)) return 0;
 
     return -1;
@@ -294,6 +301,11 @@ int directoryLength(char *dirName){
     length = 0;
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
+     
+    /* Catching Exceptions, ID: 5-8 This block attempts to open a directory specified by 
+       dirName using the opendir function. If opendir encounters an error (indicated by 
+       a return value of 0), the code prints a message indicating that the directory was 
+       not found and returns -1.*/
     if((dir_ptr = opendir(dirName)) == 0){
         printf("Directory not found\n");
         return -1; 
@@ -315,6 +327,11 @@ int directoryLength(char *dirName){
 int getFilenames(char *dirName, char **dirArray){
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
+
+    /* Catching Exceptions, ID: 5-8 This block attempts to open a directory specified by 
+       dirName using the opendir function. If opendir encounters an error (indicated by 
+       a return value of 0), the code prints a message indicating that the directory was 
+       not found and returns -1.*/
     if((dir_ptr = opendir(dirName)) == 0){
         printf("Directory not found\n");
         return -1; 
@@ -358,6 +375,8 @@ int backupFile(char *filename, char *dir, char *path) {
 
     // Open original file for reading
     FILE *originalFile = fopen(path, "rb");
+    /* Catching Exceptions, ID: 5-9 Attempts to open the original file specified by the path. 
+       If unsuccessful, prints an error message and returns 1.*/
     if (originalFile == NULL) {
         perror("Error opening original file");
         return 1;
@@ -365,6 +384,8 @@ int backupFile(char *filename, char *dir, char *path) {
 
     // Open backup file for writing
     FILE *backup_file_ptr = fopen(backupFile, "wb");
+    /* Catching Exceptions, ID: 5-10 Attempts to open the backup file specified by backupFile for writing. 
+       If unsuccessful, prints an error message, closes the original file, and returns 1.*/
     if (backup_file_ptr == NULL) {
         perror("Error creating backup file");
         fclose(originalFile);
