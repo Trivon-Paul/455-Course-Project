@@ -159,6 +159,7 @@ int main(int argc, char *argv[]){
 }
 
 // Author: Minh Tram
+// Perform Ceasar Cipher using the shift on the text given
 void caesarCipher(char *text, int shift)
 {
     for (int i = 0; text[i] != '\0'; ++i)
@@ -175,6 +176,7 @@ void caesarCipher(char *text, int shift)
 }
 
 // Author: Minh Tram
+// With the filename given open the file to read then write to
 int fileWrite(char *filename){
     FILE *file;
     char *buffer;
@@ -275,6 +277,7 @@ int fileWrite(char *filename){
 }
 
 // Author: Trivon Paul
+// Check to see if the given filename is a file or directory
 int isFile(char *filename){
     struct stat fileInfo;
     // end with error if lstat can't access the filename given
@@ -296,6 +299,7 @@ int isFile(char *filename){
 }
 
 // Author: Trivon Paul
+// check to see the length of a given directory
 int directoryLength(char *dirName){
      // Set the length to 0
     length = 0;
@@ -324,6 +328,7 @@ int directoryLength(char *dirName){
 }
 
 // Author: Trivon Paul
+// Get all the filenames within a directory
 int getFilenames(char *dirName, char **dirArray){
     DIR *dir_ptr;
     struct dirent *dirent_ptr;
@@ -351,6 +356,7 @@ int getFilenames(char *dirName, char **dirArray){
 }
 
 // Author: Trivon Paul
+// Create a directory called backup to copy files to
 int backupFile(char *filename, char *dir, char *path) {
     char backupDir[MAXPATH];
     char backupFile[MAXPATH];
