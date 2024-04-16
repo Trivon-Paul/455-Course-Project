@@ -8,7 +8,7 @@ shifting characters in the input text by the specified amount.
 The program handles various error conditions, such as file opening failures, 
 memory allocation failures, invalid user input, and file writing errors.
 
-Run with Google Cloud Sheel example file structure Caesar.c
+Run with Google Cloud Shell example file structure Caesar.c
 In the commandline terminal (ensure that you are on the directory of that file located) and type of each commands below:
 gcc Caesar.c
 ./a.out (or ./Caesar.out) filename => e.g. ./a.out encrypt.txt
